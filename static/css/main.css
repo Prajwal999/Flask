@@ -1,6 +1,99 @@
-body {
-    margin: auto;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-
+/* General page content */
+.content {
+    font-family: Arial, sans-serif;
+    margin: 20px auto;
+    max-width: 800px;
+    text-align: center;
 }
 
+/* Title */
+.page_title {
+    font-size: 2.5em;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* No tasks message */
+.no_tasks {
+    font-size: 1.2em;
+    color: #7f8c8d;
+}
+
+/* Table styling */
+.task_table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table_header {
+    background-color: #34495e;
+    color: white;
+}
+
+.table_heading {
+    padding: 10px;
+    font-weight: bold;
+}
+
+.table_row {
+    border-bottom: 1px solid #ddd;
+}
+
+.task_content, .task_date, .task_actions {
+    padding: 10px;
+}
+
+/* Buttons */
+.button_delete input[type="submit"] {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button_delete input[type="submit"]:hover {
+    background-color: #c0392b;
+}
+
+.button_update input[type="submit"] {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button_update input[type="submit"]:hover {
+    background-color: #2980b9;
+}
+
+.button_add {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button_add:hover {
+    background-color: #27ae60;
+}
+
+/* Input field */
+.task_input {
+    padding: 8px;
+    width: 60%;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Form section */
+.form_section {
+    margin-top: 30px;
+}

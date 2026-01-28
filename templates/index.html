@@ -1,52 +1,49 @@
 {% extends 'base.html' %}
 
-
 {% block title %} 
     Todo List
 {% endblock %}
 
-
 {% block head %} 
-    <h1>Todo List</h1>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'css/main.css') }}">
 {% endblock %}
 
 {% block body %} 
-<div class = "content" align = "center">
-    <h1> Task Master </h1>
-    {% if tasks|length < 1%}
-        <h4>There are no tasks. Add task below</h4>
+<div class="content" align="center">
+    <h1 class="page_title">Task Master</h1>
+    
+    {% if tasks|length < 1 %}
+        <h4 class="no_tasks">There are no tasks. Add task below</h4>
     {% else %}
-    <table border="1px">
-        <tr>
-            <th>Task ToDo</th>
-            <th>Task added time</th>
-            <th>Actions</th>
+    <table class="task_table">
+        <tr class="table_header">
+            <th class="table_heading">Task ToDo</th>
+            <th class="table_heading">Task added time</th>
+            <th class="table_heading">Actions</th>
         </tr>
-        {% for task in tasks%}
-        <tr>
-
-            <td>{{ task.content }}</td>
-            <td>{{ task.date_created.date()}}</td>
-            <td> 
-                <a href = "/delete/{{task.id}}">Delete</a> 
-                <br>
-                <a href = "/update/{{task.id}}">Update</a> 
-
+        {% for task in tasks %}
+        <tr class="table_row">
+            <td class="task_content">{{ task.content }}</td>
+            <td class="task_date">{{ task.date_created.date() }}</td>
+            <td class="task_actions"> 
+                <form action="/delete/{{task.id}}" class="button_delete">
+                     <input type="submit" value="Delete" />
+                </form>
+                <form action="/update/{{task.id}}" class="button_update">
+                     <input type="submit" value="Update" />
+                </form>
             </td>
-            
         </tr>
         {% endfor %}
     </table>
     {% endif %}
 
     <br>
-    <div class = "form">
-        <form action = "/" method = "POST">
-            <input type="text" name="content" id="content">
-            <input type="submit" value="Add Task">
+    <div class="form_section">
+        <form action="/" method="POST" class="add_form">
+            <input type="text" name="content" id="content" class="task_input">
+            <input type="submit" value="Add Task" class="button_add">
         </form>
     </div>
 </div>
 {% endblock %}
-
-
