@@ -4,8 +4,7 @@ from datetime import datetime
 import os
 """
     Here, flask is the webapplication framework, just like Django for python
-    flask_sqlalchemy lets you use SQLite for the database
-
+    flask_sqlalchemy lets you use SQLite for the database.
 """
 app = Flask(__name__)     #We created the instance of Flask called app
 basedir = os.path.abspath(os.path.dirname(__file__)) 
