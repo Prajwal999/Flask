@@ -1,50 +1,86 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
+from extensions import db
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from datetime import datetime, timedelta
 import os
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from models import User, Todo  # adjust import
 """
     Here, flask is the webapplication framework, just like Django for python
     flask_sqlalchemy lets you use SQLite for the database.
 """
-app = Flask(__name__)     #We created the instance of Flask called app
+app = Flask(__name__)  
+app.config['SECRET_KEY'] = 'f9a8c2d7e3b14a9f0c7d2a6b9e5f1c3d'   #We created the instance of Flask called app
 basedir = os.path.abspath(os.path.dirname(__file__)) 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'test.db')
-db = SQLAlchemy(app)
+db.init_app(app) 
+with app.app_context(): 
+    db.create_all()
 """
     The basedir and app.config and db is for database configuration
 """
+login_manager = LoginManager() 
+login_manager.init_app(app) 
+login_manager.login_view = "login" # redirect here if not logged in 
+@login_manager.user_loader 
+def load_user(user_id): 
+    return User.query.get(int(user_id))
 
-#A table called Todo is made in the database
-class Todo(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    content = db.Column(db.String(200), nullable = False)
-    date_created = db.Column(db.DateTime, default = datetime.now())
-    task_completed = db.Column(db.Boolean, default = False)
-
-    def __repr__(self):
-    # __repr__ → defines how the object is represented when printed. Example: <Task 1>.
-        return '<Task %r>' % self.id
-
-# Here, route() is a decorator used in Flask to tell Flask which URL to trigger
-#We added methods to accept both GET and POST request. 
-@app.route('/', methods = ['POST', 'GET'])
-def index():
-    #Here, code is divided to POST and GET Methods
-    #If the method is POST, then it will add new contents to the database
+@app.route('/register', methods=['GET', 'POST'])
+def register():
     if request.method == 'POST':
-        task_content = request.form['content'] #grabs the text input from the form field named "content"
-        new_task = Todo(content = task_content) #creates a new todo object, meaning it creates a new row for new task
+        username = request.form['username']
+        password = request.form['password']
 
+        # check if user exists
+        if User.query.filter_by(username=username).first():
+            error = "Username already taken" 
+            return render_template('register.html', error=error, username=username)
+        new_user = User(username=username)
+        new_user.set_password(password)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for('login'))
+    
+    return render_template('register.html')
+        
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        user = User.query.filter_by(username=username).first()
+        if user and user.check_password(password):
+            login_user(user)
+            return redirect(url_for('index'))
+        else:
+            return "Invalid credentials"
+
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+@app.route('/', methods=['GET', 'POST'])
+@login_required
+def index():
+    if request.method == 'POST':
+        task_content = request.form['content']
+        new_task = Todo(content=task_content, user_id=current_user.id)
         try:
-            db.session.add(new_task) #adds the new_task to the database session
-            db.session.commit() #saves the added object permanently
-            return redirect('/') #reloads the homepage to show the updated list
+            db.session.add(new_task)
+            db.session.commit()
+            return redirect(url_for('index'))
         except:
-            return 'There was an Issue adding your Thing'
-    #Here, the else represents the GET part.
+            return 'There was an issue adding your task'
     else:
-        tasks = Todo.query.order_by(Todo.date_created).all() #This fetches all the database contents
-        return render_template("index.html", tasks = tasks) #This passes tasks to HTML Template to display it
+        tasks = Todo.query.filter_by(user_id=current_user.id).order_by(Todo.date_created).all()
+        return render_template("index.html", tasks=tasks)
 
 
 @app.route('/delete/<int:id>')
