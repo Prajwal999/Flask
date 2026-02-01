@@ -131,9 +131,8 @@ def selection():
     filter_option = request.args.get('filter', 'all')  # default to 'all'
     if filter_option == 'today':
         tasks = Todo.query.filter(
-            Todo.user_id >= current_user.id,
             Todo.date_created >= datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        ).order_by(Todo.date_created).all()
+        ).filter_by(user_id = current_user.id).order_by(Todo.date_created).all()
 
     elif filter_option == 'completed':
         tasks = Todo.query.filter_by(user_id = current_user.id, task_completed=True).order_by(Todo.date_created).all()
