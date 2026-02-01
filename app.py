@@ -11,7 +11,7 @@ from models import User, Todo  # adjust import
     flask_sqlalchemy lets you use SQLite for the database.
 """
 app = Flask(__name__)  
-app.config['SECRET_KEY'] = 'f9a8c2d7e3b14a9f0c7d2a6b9e5f1c3d'   #We created the instance of Flask called app
+app.config['SECRET_KEY'] = 'f9a8c2d7e3b14a9f0c7d2a6b9e5f1c3d'  
 basedir = os.path.abspath(os.path.dirname(__file__)) 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'test.db')
 db.init_app(app) 
@@ -71,7 +71,7 @@ def logout():
 def index():
     if request.method == 'POST':
         task_content = request.form['content']
-        new_task = Todo(content=task_content, user_id=current_user.id)
+        new_task = Todo(content = task_content, user_id = current_user.id)
         try:
             db.session.add(new_task)
             db.session.commit()
@@ -79,8 +79,8 @@ def index():
         except:
             return 'There was an issue adding your task'
     else:
-        tasks = Todo.query.filter_by(user_id=current_user.id).order_by(Todo.date_created).all()
-        return render_template("index.html", tasks=tasks)
+        tasks = Todo.query.filter_by(user_id = current_user.id).order_by(Todo.date_created).all()
+        return render_template("index.html", tasks = tasks)
 
 
 @app.route('/delete/<int:id>')
@@ -131,17 +131,18 @@ def selection():
     filter_option = request.args.get('filter', 'all')  # default to 'all'
     if filter_option == 'today':
         tasks = Todo.query.filter(
+            Todo.user_id >= current_user.id,
             Todo.date_created >= datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
         ).order_by(Todo.date_created).all()
 
     elif filter_option == 'completed':
-        tasks = Todo.query.filter_by(task_completed=True).order_by(Todo.date_created).all()
+        tasks = Todo.query.filter_by(user_id = current_user.id, task_completed=True).order_by(Todo.date_created).all()
 
     elif filter_option == 'pending':
-        tasks = Todo.query.filter_by(task_completed=False).order_by(Todo.date_created).all()
+        tasks = Todo.query.filter_by(user_id = current_user.id, task_completed=False).order_by(Todo.date_created).all()
 
     elif filter_option == 'all':
-        tasks = Todo.query.order_by(Todo.date_created).all()
+        tasks = Todo.query.filter_by(user_id=current_user.id).order_by(Todo.date_created).all()
 
     return render_template("index.html", tasks=tasks, current_filter=filter_option)
 
