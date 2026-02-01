@@ -109,6 +109,12 @@ def selection():
 
     return render_template("index.html", tasks=tasks, current_filter=filter_option)
 
+@app.route('/api/completed/<int:id>', methods=['POST'])
+def api_task_completed(id):
+    task = Todo.query.get_or_404(id)
+    task.task_completed = not task.task_completed
+    db.session.commit()
+    return {"success": True, "completed": task.task_completed}
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

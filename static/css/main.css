@@ -97,3 +97,9 @@
 .form_section {
     margin-top: 30px;
 }
+
+.completed {
+    text-decoration: line-through;
+    color: gray;
+}
+
