@@ -19,6 +19,7 @@ class Todo(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     content = db.Column(db.String(200), nullable = False)
     date_created = db.Column(db.DateTime, default = datetime.now())
+    task_completed = db.Column(db.Boolean, default = False)
 
     def __repr__(self):
     # __repr__ → defines how the object is represented when printed. Example: <Task 1>.
@@ -51,10 +52,25 @@ def delete(id):
     """
     This part is to to delete stuff. This works like above, so not much to describe.
     """
-    task_to_delete = Todo.query.get_or_404(id) #Takes retrieves the data by the id given
+    task_to_delete = Todo.query.get_or_404(id) #\retrieves the data by the id given
 
     try:
         db.session.delete(task_to_delete)
+        db.session.commit()
+        return redirect('/')
+    except:
+        return "Error deleting the Task"
+
+
+@app.route('/completed/<int:id>', methods = ['POST', 'GET'])
+def task_completed(id):
+    """
+    This part is to to delete stuff. This works like above, so not much to describe.
+    """
+    task = Todo.query.get_or_404(id) #\retrieves the data by the id given
+
+    try:
+        task.task_completed = not task.task_completed
         db.session.commit()
         return redirect('/')
     except:
@@ -73,5 +89,6 @@ def update(id):
     else:
         return render_template('update.html', task = task_to_update)
 
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5009)

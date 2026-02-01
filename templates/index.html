@@ -17,14 +17,25 @@
     {% else %}
     <table class="task_table">
         <tr class="table_header">
-            <th class="table_heading">Task ToDo</th>
-            <th class="table_heading">Task added time</th>
-            <th class="table_heading">Actions</th>
+            <th class = "table_heading">Task ToDo</th>
+            <th class = "table_heading">Task added time</th>
+            <th class = "table_heading">Task Completed</th>
+            <th class = "table_heading">Actions</th>
         </tr>
         {% for task in tasks %}
         <tr class="table_row">
             <td class="task_content">{{ task.content }}</td>
             <td class="task_date">{{ task.date_created.date() }}</td>
+
+            <td class="task_completed">
+                <form action="/completed/{{ task.id }}" method="POST">
+                    <input type="checkbox" name="completed" onchange="this.form.submit()" 
+                        {% if task.task_completed %}checked{% endif %}>
+                </form>
+            </td>
+
+
+
             <td class="task_actions"> 
                 <form action="/delete/{{task.id}}" class="button_delete">
                      <input type="submit" value="Delete" />
