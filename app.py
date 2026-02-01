@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 """
     Here, flask is the webapplication framework, just like Django for python
@@ -90,5 +90,25 @@ def update(id):
         return render_template('update.html', task = task_to_update)
 
 
+@app.route('/selection', methods=['POST', 'GET'])
+def selection():
+    filter_option = request.args.get('filter', 'all')  # default to 'all'
+    if filter_option == 'today':
+        tasks = Todo.query.filter(
+            Todo.date_created >= datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        ).order_by(Todo.date_created).all()
+
+    elif filter_option == 'completed':
+        tasks = Todo.query.filter_by(task_completed=True).order_by(Todo.date_created).all()
+
+    elif filter_option == 'pending':
+        tasks = Todo.query.filter_by(task_completed=False).order_by(Todo.date_created).all()
+
+    elif filter_option == 'all':
+        tasks = Todo.query.order_by(Todo.date_created).all()
+
+    return render_template("index.html", tasks=tasks, current_filter=filter_option)
+
+
 if __name__ == "__main__":
-    app.run(debug=True, port=5009)
+    app.run(debug=True, port=5010)

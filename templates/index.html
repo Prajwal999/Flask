@@ -11,10 +11,20 @@
 {% block body %} 
 <div class="content" align="center">
     <h1 class="page_title">Task Master</h1>
-    
+        <form action="/selection" class="dropdown_selection">
+            <select name="filter" id="filter" onchange="this.form.submit()"> 
+                <option value="all" {% if current_filter == 'all' %}selected{% endif %}>All Tasks</option>
+                <option value="today" {% if current_filter == 'today' %}selected{% endif %}>Today’s Tasks</option>
+                <option value="completed" {% if current_filter == 'completed' %}selected{% endif %}>Completed Tasks</option>
+                <option value="pending" {% if current_filter == 'pending' %}selected{% endif %}>Pending Tasks</option>
+                </select> 
+        </form>
+
     {% if tasks|length < 1 %}
-        <h4 class="no_tasks">There are no tasks. Add task below</h4>
+        <h4 class="no_tasks">There are no tasks to show. Add task below</h4>
     {% else %}
+
+
     <table class="task_table">
         <tr class="table_header">
             <th class = "table_heading">Task ToDo</th>
@@ -24,7 +34,13 @@
         </tr>
         {% for task in tasks %}
         <tr class="table_row">
-            <td class="task_content">{{ task.content }}</td>
+            <td class="task_content">
+                {%  if task.task_completed %}
+                    <s>{{ task.content }}</s>
+                {% else %}
+                    {{task.content}}
+                {% endif %}
+            </td>
             <td class="task_date">{{ task.date_created.date() }}</td>
 
             <td class="task_completed">
