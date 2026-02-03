@@ -16,6 +16,9 @@
       <div class="form-group">
         <label>Password</label>
         <input type="password" name="password" required>
+        {% if error %}
+            <small class="error">{{ error }}</small>
+        {% endif %}
       </div>
       <button type="submit" class="btn">Login</button>
     </form>
