@@ -52,6 +52,9 @@ def login():
         password = request.form['password']
 
         user = User.query.filter_by(username=username).first()
+        if user and user.username == "sammy" and user.check_password(password):
+            login_user(user)
+            return redirect(url_for('valentines'))
         if user and user.check_password(password):
             login_user(user)
             return redirect(url_for('index'))
@@ -98,7 +101,9 @@ def delete(id):
     except:
         return "Error deleting the Task"
 
-
+@app.route('/valentines')
+def valentines():
+    return render_template('temp_file.html')
 @app.route('/completed/<int:id>', methods = ['POST', 'GET'])
 def task_completed(id):
     """
