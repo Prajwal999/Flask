@@ -104,6 +104,9 @@
 <div style="position:fixed; left:50%; bottom:4vmin; transform:translateX(-50%); z-index:0; pointer-events:none; display:flex; justify-content:center; align-items:flex-end;">
     <img id="mini-her" src="{{ url_for('static', filename='face.png') }}" alt="Her" style="width:clamp(220px,60vmin,1200px); max-width:90vw; border-radius:50%;  display:block;" />
 </div>
+<audio id="bg-music" loop>
+  <source src="{{ url_for('static', filename='background.mp3') }}" type="audio/mpeg">
+</audio>
 
   <div id="reveal">
     <!-- Replace with real photo URL of her -->
@@ -112,6 +115,23 @@
   </div>
 
   <script>
+  const bgMusic = document.getElementById('bg-music');
+  let musicStarted = false;
+  window.addEventListener('click', (e) => {
+    if (!musicStarted) {
+      bgMusic.volume = 0.5;
+      bgMusic.play().catch(() => {});
+      musicStarted = true;
+    }
+
+    pops.push({
+      x: e.clientX,
+      y: e.clientY,
+      life: 0
+    });
+});
+
+
   const canvas = document.getElementById('c');
   const ctx = canvas.getContext('2d');
   let cw, ch;
@@ -181,6 +201,7 @@
       ctx.restore();
     }
   }
+
 
   /* ---------- Love Pops ---------- */
   const pops = [];
